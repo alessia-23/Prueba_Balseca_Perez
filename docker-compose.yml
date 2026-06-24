@@ -1,0 +1,53 @@
+services:
+
+  mysql_maestro:
+    image: mysql:8
+
+    container_name: mysql_maestro
+
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: mundial
+
+    ports:
+      - "3306:3306"
+
+    volumes:
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  app1:
+    build: ./app
+
+    container_name: app1
+
+    environment:
+      APP_NAME: APP1
+
+    depends_on:
+      - mysql_maestro
+
+  app2:
+    build: ./app
+
+    container_name: app2
+
+    environment:
+      APP_NAME: APP2
+
+    depends_on:
+      - mysql_maestro
+
+  nginx:
+    image: nginx:latest
+
+    container_name: nginx
+
+    ports:
+      - "80:80"
+
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+
+    depends_on:
+      - app1
+      - app2

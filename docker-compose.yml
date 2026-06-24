@@ -2,7 +2,6 @@ services:
 
   mysql_maestro:
     image: mysql:8
-
     container_name: mysql_maestro
 
     environment:
@@ -12,42 +11,26 @@ services:
     ports:
       - "3306:3306"
 
+    command: --server-id=1 --log-bin=mysql-bin --binlog-do-db=mundial
+
     volumes:
-      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./mysql/maestro.cnf:/etc/mysql/conf.d/maestro.cnf:ro
 
-  app1:
-    build: ./app
-
-    container_name: app1
-
-    environment:
-      APP_NAME: APP1
-
-    depends_on:
-      - mysql_maestro
-
-  app2:
-    build: ./app
-
-    container_name: app2
+  mysql_esclavo:
+    image: mysql:8
+    container_name: mysql_esclavo
 
     environment:
-      APP_NAME: APP2
-
-    depends_on:
-      - mysql_maestro
-
-  nginx:
-    image: nginx:latest
-
-    container_name: nginx
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: mundial
 
     ports:
-      - "80:80"
+      - "3307:3306"
 
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    command: --server-id=2 --relay-log=relay-log --read-only=1
 
     depends_on:
-      - app1
-      - app2
+      - mysql_maestro
+
+    volumes:
+      - ./mysql/esclavo.cnf:/etc/mysql/conf.d/esclavo.cnf:ro

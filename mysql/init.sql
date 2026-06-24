@@ -2,8 +2,11 @@ CREATE DATABASE IF NOT EXISTS mundial;
 
 USE mundial;
 
-CREATE TABLE selecciones(
-    id INT PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE selecciones (
+    id INT PRIMARY KEY,
     nombre VARCHAR(100),
-    grupo VARCHAR(10)
+    entrenador VARCHAR(100),
+    ranking_fifa INT,
+    participaciones INT,
+    campeonatos INT
 );
